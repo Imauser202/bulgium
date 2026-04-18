@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Premium Dark Palette -->
+    <color name="primary">#D4AF37</color> <!-- Gold -->
+    <color name="primaryDark">#B8860B</color>
+    <color name="onPrimary">#121212</color>
+    <color name="accent">#D4AF37</color>
+    
+    <color name="nav_item_color">#BDBDBD</color>
+    <color name="fab_background">#D4AF37</color>
+
+    <!-- UI Backgrounds -->
+    <color name="background">#121212</color> <!-- Matte Black -->
+    <color name="surface">#1E1E1E</color>
+
+    <!-- Text Colors -->
+    <color name="textPrimary">#FFFFFF</color>
+    <color name="textSecondary">#BDBDBD</color>
+    <color name="textDisabled">#666666</color>
+
+    <!-- Transaction Colors -->
+    <color name="income_green">#2ECC71</color>
+    <color name="expense_red">#E74C3C</color>
+    <color name="success">#2ECC71</color>
+    <color name="danger">#E74C3C</color>
+    <color name="progress_blue">#D4AF37</color>
+
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="gray">#9E9E9E</color>
+    <color name="light_gray">#333333</color>
+    <color name="gold">#D4AF37</color>
+</resources>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_add_record"
+            android:icon="@android:drawable/ic_input_add"
+            android:title="New Record" />
+        <item
+            android:id="@+id/nav_calculator"
+            android:icon="@android:drawable/ic_menu_agenda"
+            android:title="Calculator" />
+        <item
+            android:id="@+id/nav_cash_flow"
+            android:icon="@android:drawable/ic_menu_sort_by_size"
+            android:title="Cash Flow" />
+        <item
+            android:id="@+id/nav_calendar"
+            android:icon="@android:drawable/ic_menu_my_calendar"
+            android:title="Calendar" />
+        <item
+            android:id="@+id/nav_reminders"
+            android:icon="@android:drawable/ic_lock_idle_alarm"
+            android:title="Reminders" />
+        <item
+            android:id="@+id/nav_savings"
+            android:icon="@drawable/baseline_add_circle_24"
+            android:title="Savings Goals" />
+        <item
+            android:id="@+id/nav_reports"
+            android:icon="@android:drawable/ic_menu_report_image"
+            android:title="Reports" />
+    </group>
+
+    <item android:title="Support">
+        <menu>
+            <item
+                android:id="@+id/nav_settings"
+                android:icon="@android:drawable/ic_menu_preferences"
+                android:title="Settings" />
+        </menu>
+    </item>
+
+</menu>

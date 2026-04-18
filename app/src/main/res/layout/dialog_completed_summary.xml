@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Goal Hall of Fame 🏆"
+        android:textColor="@color/primary"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Look at what you've achieved!"
+        android:textColor="@color/textSecondary"
+        android:textSize="14sp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="16dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_completed_goals"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_marginBottom="24dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_set_new_goal_summary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Set a New Goal"
+        android:textAllCaps="false"
+        app:cornerRadius="24dp"
+        app:icon="@android:drawable/ic_input_add"
+        app:backgroundTint="@color/primary"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_close_summary"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Close"
+        android:textColor="@color/textSecondary"
+        android:layout_marginTop="8dp"/>
+
+</LinearLayout>

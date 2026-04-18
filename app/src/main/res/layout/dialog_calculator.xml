@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="@color/background">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="@color/light_gray"
+        app:cardBackgroundColor="@color/surface">
+
+        <TextView
+            android:id="@+id/tv_calc_display"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:text="0"
+            android:textColor="@color/textPrimary"
+            android:textSize="48sp"
+            android:gravity="bottom|end"
+            android:paddingEnd="20dp"
+            android:paddingBottom="12dp"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:ellipsize="start"/>
+    </com.google.android.material.card.MaterialCardView>
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="4"
+        android:rowCount="5">
+
+        <!-- Row 1 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_calc_ac"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:text="AC"
+            android:textColor="@color/expense_red"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/surface"
+            app:cornerRadius="16dp"
+            app:rippleColor="#1AE74C3C"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_calc_plus_minus"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:text="±"
+            android:textColor="@color/textSecondary"
+            android:textSize="18sp"
+            app:backgroundTint="@color/surface"
+            app:cornerRadius="16dp"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_calc_percent"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:text="%"
+            android:textColor="@color/textSecondary"
+            android:textSize="18sp"
+            app:backgroundTint="@color/surface"
+            app:cornerRadius="16dp"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_calc_divide"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:text="÷"
+            android:textColor="@color/primary"
+            android:textSize="24sp"
+            app:backgroundTint="@color/surface"
+            app:cornerRadius="16dp"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
+
+        <!-- Row 2 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_calc_7"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:text="7"
+            android:textColor="@color/textPrimary"
+            android:textSize="20sp"
+            app:backgroundTint="@color/surface"
+            app:cornerRadius="16dp"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_calc_8"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:text="8"
+            android:textColor="@color/textPrimary"
+            android:textSize="20sp"
+            app:backgroundTint="@color/surface"
+            app:cornerRadius="16dp"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_calc_9"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:text="9"
+            android:textColor="@color/textPrimary"
+            android:textSize="20sp"
+            app:backgroundTint="@color/surface"
+            app:cornerRadius="16dp"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_calc_multiply"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:text="×"
+            android:textColor="@color/primary"
+            android:textSize="24sp"
+            app:backgroundTint="@color/surface"
+            app:cornerRadius="16dp"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
+
+        <!-- Row 3 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_calc_4"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:text="4"
+            android:textColor="@color/textPrimary"
+            android:textSize="20sp"
+            app:backgroundTint="@color/surface"
+            app:cornerRadius="16dp"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_calc_5"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:text="5"
+            android:textColor="@color/textPrimary"
+            android:textSize="20sp"
+            app:backgroundTint="@color/surface"
+            app:cornerRadius="16dp"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_calc_6"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:text="6"
+            android:textColor="@color/textPrimary"
+            android:textSize="20sp"
+            app:backgroundTint="@color/surface"
+            app:cornerRadius="16dp"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_calc_minus"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:text="−"
+            android:textColor="@color/primary"
+            android:textSize="24sp"
+            app:backgroundTint="@color/surface"
+            app:cornerRadius="16dp"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
+
+        <!-- Row 4 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_calc_1"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:text="1"
+            android:textColor="@color/textPrimary"
+            android:textSize="20sp"
+            app:backgroundTint="@color/surface"
+            app:cornerRadius="16dp"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_calc_2"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:text="2"
+            android:textColor="@color/textPrimary"
+            android:textSize="20sp"
+            app:backgroundTint="@color/surface"
+            app:cornerRadius="16dp"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_calc_3"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:text="3"
+            android:textColor="@color/textPrimary"
+            android:textSize="20sp"
+            app:backgroundTint="@color/surface"
+            app:cornerRadius="16dp"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_calc_plus"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:text="+"
+            android:textColor="@color/primary"
+            android:textSize="24sp"
+            app:backgroundTint="@color/surface"
+            app:cornerRadius="16dp"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
+
+        <!-- Row 5 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_calc_0"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_columnWeight="2"
+            android:layout_columnSpan="2"
+            android:layout_margin="4dp"
+            android:text="0"
+            android:textColor="@color/textPrimary"
+            android:textSize="20sp"
+            android:paddingStart="24dp"
+            android:gravity="start|center_vertical"
+            app:backgroundTint="@color/surface"
+            app:cornerRadius="16dp"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_calc_dot"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:text="."
+            android:textColor="@color/textPrimary"
+            android:textSize="20sp"
+            app:backgroundTint="@color/surface"
+            app:cornerRadius="16dp"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_calc_equal"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:text="="
+            android:textColor="@color/onPrimary"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/primary"
+            app:cornerRadius="16dp"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
+
+    </GridLayout>
+
+</LinearLayout>

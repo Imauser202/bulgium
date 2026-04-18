@@ -1,0 +1,68 @@
+<resources>
+    <string name="app_name">Bulgium</string>
+
+    <!-- Main Activity -->
+    <string name="fab_menu_savings">Savings</string>
+    <string name="fab_menu_new_record">New Record</string>
+    <string name="fab_menu_calendar">Calendar</string>
+    <string name="fab_menu_reminders">Reminders</string>
+    <string name="fab_add_description">Add a new transaction or savings</string>
+    <string name="fab_savings_description">Go to savings</string>
+    <string name="fab_record_description">Add a new transaction</string>
+    <string name="fab_calendar_description">View calendar</string>
+    <string name="fab_reminders_description">Set reminders</string>
+
+    <!-- Dashboard -->
+    <string name="total_balance">Total Balance</string>
+    <string name="default_balance">₱0.00</string>
+    <string name="monthly_overview">Monthly Overview</string>
+    <string name="smart_budget_allocations">Smart Budget Allocations</string>
+    <string name="recommended_split">Recommended split for current balance</string>
+    <string name="financial_tips">Financial Tips</string>
+    <string name="video_description">Watch: How to save money effectively</string>
+    <string name="premium_feature">Premium Feature</string>
+    <string name="premium_description">Upgrade to watch exclusive financial tips</string>
+    <string name="unlock_now">Unlock Now</string>
+    <string name="recent_transactions">Recent Transactions</string>
+    <string name="lock_icon_description">Locked feature</string>
+
+    <!-- Add Transaction -->
+    <string name="new_transaction">New Transaction</string>
+    <string name="amount">Amount</string>
+    <string name="income">Income</string>
+    <string name="expense">Expense</string>
+    <string name="category">Category</string>
+    <string name="note_optional">Note (Optional)</string>
+    <string name="save_transaction">Save Transaction</string>
+    <string name="date">Date</string>
+    <string name="error_amount_required">Please enter an amount.</string>
+    <string name="error_invalid_amount">Invalid amount.</string>
+    <string name="transaction_updated">Transaction updated!</string>
+    <string name="smart_suggestion">Smart Suggestion</string>
+    <string name="got_it">Got it!</string>
+    <string name="edit_transaction">Edit Transaction</string>
+    <string name="update_transaction">Update Transaction</string>
+
+    <!-- Savings -->
+    <string name="savings_goal">Savings Goal</string>
+    <string name="target_amount">Target Amount</string>
+    <string name="set_goal">Set Goal</string>
+    <string name="reset_goal">Reset Goal</string>
+    <string name="add_savings">Add Savings</string>
+    <string name="amount_to_save">Amount to Save</string>
+    <string name="add_to_savings">Add to Savings</string>
+    <string name="history">History</string>
+    <string name="clear_history">Clear History</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_reports">Reports</string>
+
+    <!-- Calculator -->
+    <string name="calc_title">Quick Calculator</string>
+    <string name="calc_close">Close</string>
+    <string name="calc_format">%1$s</string>
+    <string name="calc_append">%1$s%2$s</string>
+
+</resources>

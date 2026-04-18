@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- Financial Pulse Table -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/surface"
+            android:layout_marginBottom="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Financial Pulse"
+                    android:textColor="@color/primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="16dp"/>
+
+                <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:stretchColumns="1">
+
+                    <!-- Daily Budget Row -->
+                    <TableRow android:paddingVertical="8dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Daily Allowance"
+                            android:textColor="@color/textSecondary"
+                            android:textSize="14sp"/>
+                        <TextView
+                            android:id="@+id/tv_pulse_daily"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="₱0.00"
+                            android:textColor="@color/textPrimary"
+                            android:textStyle="bold"
+                            android:gravity="end"/>
+                    </TableRow>
+
+                    <View android:layout_height="1dp" android:background="#1A000000" />
+
+                    <!-- Top Spending Row -->
+                    <TableRow android:paddingVertical="8dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Main Expense"
+                            android:textColor="@color/textSecondary"
+                            android:textSize="14sp"/>
+                        <TextView
+                            android:id="@+id/tv_pulse_top_cat"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="None"
+                            android:textColor="@color/expense_red"
+                            android:textStyle="bold"
+                            android:gravity="end"/>
+                    </TableRow>
+
+                    <View android:layout_height="1dp" android:background="#1A000000" />
+
+                    <!-- Savings Health Row -->
+                    <TableRow android:paddingVertical="8dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Savings Health"
+                            android:textColor="@color/textSecondary"
+                            android:textSize="14sp"/>
+                        <TextView
+                            android:id="@+id/tv_pulse_health"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Stable"
+                            android:textColor="@color/income_green"
+                            android:textStyle="bold"
+                            android:gravity="end"/>
+                    </TableRow>
+                </TableLayout>
+
+                <!-- Small trend line at bottom of table -->
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/balance_chart"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="12dp"/>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Recent Transactions Label -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Recent Transactions"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/textPrimary"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Recent Transactions List -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_recent_transactions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            android:clipToPadding="false"
+            android:paddingBottom="80dp"/>
+
+    </LinearLayout>
+</ScrollView>
