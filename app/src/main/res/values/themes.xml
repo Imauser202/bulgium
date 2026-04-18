@@ -13,6 +13,8 @@
         <item name="android:statusBarColor">@color/primaryDark</item>
         
         <item name="materialAlertDialogTheme">@style/CustomAlertDialog</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 
     <!-- Splash Screen Theme -->

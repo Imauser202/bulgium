@@ -3,6 +3,7 @@ package com.example.bulgium;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AnticipateInterpolator;
@@ -15,11 +16,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.splashscreen.SplashScreen;
+import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetSequence;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
@@ -90,6 +94,9 @@ public class MainActivity extends AppCompatActivity {
 
         setupNavigation();
         setupKeyboardListener();
+        
+        // Use post() to ensure view is laid out before starting tour
+        findViewById(android.R.id.content).post(() -> setupOnboarding());
 
         // Biometric Lock Check - Moved after setContentView and super.onCreate
         if (settingsPrefs.getBoolean("biometric_lock", false)) {
@@ -136,7 +143,9 @@ public class MainActivity extends AppCompatActivity {
             int id = item.getItemId();
             if (id == R.id.nav_add_record) selected = new AddTransactionFragment();
             else if (id == R.id.nav_calculator) {
-                new CalculatorFragment().show(getSupportFragmentManager(), "calculator");
+                startActivity(new Intent(MainActivity.this, CalculatorActivity.class));
+                drawerLayout.closeDrawer(GravityCompat.START);
+                return true;
             }
             else if (id == R.id.nav_cash_flow) selected = new CashFlowFragment();
             else if (id == R.id.nav_savings) selected = new SavingsFragment();
@@ -154,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
-        btnOpenDrawer.setOnClickListener(v -> drawerLayout.openDrawer(androidx.core.view.GravityCompat.START));
+        btnOpenDrawer.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
     }
 
     private void showBiometricPrompt() {
@@ -186,6 +195,54 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         biometricPrompt.authenticate(promptInfo);
+    }
+
+    private void setupOnboarding() {
+        SharedPreferences prefs = getSharedPreferences("bulgium_prefs", MODE_PRIVATE);
+        boolean isFirstRun = prefs.getBoolean("is_first_run", true);
+        if (!isFirstRun) return;
+
+        isTutorialRunning = true;
+
+        // Hide the static onboarding layout if it's there
+        View onboardingRoot = findViewById(R.id.onboarding_root);
+        if (onboardingRoot != null) onboardingRoot.setVisibility(View.GONE);
+
+        new TapTargetSequence(this)
+                .targets(
+                        TapTarget.forView(btnOpenDrawer, "Welcome to Bulgium!", "Your personal financial co-pilot is ready to help you grow your wealth.\n\nTap the menu to find the Calculator and more.")
+                                .outerCircleColor(R.color.primary)
+                                .targetCircleColor(android.R.color.white)
+                                .titleTextColor(android.R.color.white)
+                                .descriptionTextColor(android.R.color.white)
+                                .cancelable(false)
+                                .transparentTarget(true),
+                        TapTarget.forView(bottomNavigation, "Quick Navigation", "Easily switch between Home, Dashboard, and Savings records.")
+                                .outerCircleColor(R.color.primary)
+                                .targetCircleColor(android.R.color.white)
+                                .titleTextColor(android.R.color.white)
+                                .descriptionTextColor(android.R.color.white)
+                                .cancelable(false)
+                                .transparentTarget(true)
+                )
+                .listener(new TapTargetSequence.Listener() {
+                    @Override
+                    public void onSequenceFinish() {
+                        isTutorialRunning = false;
+                        prefs.edit().putBoolean("is_first_run", false).apply();
+                        
+                        // Trigger HomeFragment tour if visible
+                        Fragment current = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                        if (current instanceof HomeFragment) {
+                            ((HomeFragment) current).startLocalTour();
+                        }
+                    }
+                    @Override public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {}
+                    @Override public void onSequenceCanceled(TapTarget lastTarget) {
+                        onSequenceFinish();
+                    }
+                })
+                .start();
     }
 
     private void setupKeyboardListener() {

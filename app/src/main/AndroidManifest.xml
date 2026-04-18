@@ -37,6 +37,9 @@
             android:enabled="true"
             android:exported="false" />
 
+        <activity android:name=".CalculatorActivity"
+            android:theme="@style/Theme.Bulgium" />
+
     </application>
 
 </manifest>

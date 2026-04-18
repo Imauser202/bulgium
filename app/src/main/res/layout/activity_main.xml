@@ -135,7 +135,7 @@
         android:clickable="true"
         android:focusable="true"
         android:elevation="100dp"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -166,6 +166,9 @@
                 android:text="Please authenticate to continue"
                 android:textColor="@color/textSecondary"
                 android:textSize="14sp" />
+
+            <!-- THIS IS A TEST UPDATE-->
+
         </LinearLayout>
     </FrameLayout>
 
