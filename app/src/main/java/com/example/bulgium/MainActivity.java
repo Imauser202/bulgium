@@ -3,6 +3,7 @@ package com.example.bulgium;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +32,9 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import java.text.DecimalFormat;
 
 public class MainActivity extends AppCompatActivity {
@@ -40,13 +44,17 @@ public class MainActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private ImageView btnOpenDrawer;
     private MaterialCardView bottomNavCard;
+    private View toolbarLayout;
     private ViewTreeObserver.OnGlobalLayoutListener keyboardLayoutListener;
 
-    // Onboarding State
+    // Onboarding UI Elements
     private View onboardingRoot;
     private TextView tvOnboardingTitle, tvOnboardingDesc;
     private MaterialButton btnOnboardingNext, btnOnboardingSkip;
+
+    // Onboarding State
     private int onboardingStep = 0;
+    public static boolean isTutorialRunning = false;
 
     // Calculator State
     private double firstValue = Double.NaN;
@@ -76,23 +84,62 @@ public class MainActivity extends AppCompatActivity {
         });
         
         super.onCreate(savedInstanceState);
+        
+        // Modern Edge-to-Edge: Handle notches properly on all phones (Infinix, etc.)
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        getWindow().setStatusBarColor(android.graphics.Color.TRANSPARENT);
+        
         setContentView(R.layout.activity_main);
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-            final WindowInsetsController controller = getWindow().getInsetsController();
-            if (controller != null) {
-                controller.hide(WindowInsets.Type.statusBars());
-                controller.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
-            }
-        } else {
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-        }
 
         drawerLayout = findViewById(R.id.drawer_layout);
         bottomNavigation = findViewById(R.id.bottom_navigation);
         navigationView = findViewById(R.id.navigation_view);
         btnOpenDrawer = findViewById(R.id.btn_open_drawer);
         bottomNavCard = findViewById(R.id.bottom_nav_card);
+        toolbarLayout = findViewById(R.id.toolbar_layout);
+        View notchSpacer = findViewById(R.id.notch_spacer);
+
+        // Dynamic Notch Support: Adjust the spacer height instead of padding
+        ViewCompat.setOnApplyWindowInsetsListener(toolbarLayout, (v, insets) -> {
+            int topInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top;
+            if (insets.getDisplayCutout() != null) {
+                topInset = Math.max(topInset, insets.getDisplayCutout().getSafeInsetTop());
+            }
+            
+            // Set the spacer's height to match the notch
+            if (notchSpacer != null) {
+                android.view.ViewGroup.LayoutParams params = notchSpacer.getLayoutParams();
+                params.height = topInset;
+                notchSpacer.setLayoutParams(params);
+            }
+            
+            // Handle bottom insets for the navigation island (Gesture bar support)
+            int bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom;
+            if (bottomNavCard != null) {
+                android.view.ViewGroup.MarginLayoutParams marginParams = (android.view.ViewGroup.MarginLayoutParams) bottomNavCard.getLayoutParams();
+                marginParams.bottomMargin = (int) (24 * getResources().getDisplayMetrics().density) + bottomInset;
+                bottomNavCard.setLayoutParams(marginParams);
+            }
+
+            return insets;
+        });
+
+        // Initialize Onboarding Views
+        onboardingRoot = findViewById(R.id.onboarding_root);
+        tvOnboardingTitle = findViewById(R.id.tv_onboarding_title);
+        tvOnboardingDesc = findViewById(R.id.tv_onboarding_desc);
+        btnOnboardingNext = findViewById(R.id.btn_onboarding_next);
+        btnOnboardingSkip = findViewById(R.id.btn_onboarding_skip);
+
+        if (btnOnboardingNext != null) {
+            btnOnboardingNext.setOnClickListener(v -> {
+                onboardingStep++;
+                updateOnboardingUI();
+            });
+        }
+        if (btnOnboardingSkip != null) {
+            btnOnboardingSkip.setOnClickListener(v -> finishOnboarding());
+        }
 
         setupOnboarding();
         setupKeyboardListener();
@@ -177,55 +224,215 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("bulgium_prefs", MODE_PRIVATE);
         boolean isFirstRun = prefs.getBoolean("is_first_run", true);
 
-        if (!isFirstRun) return;
+        if (isFirstRun) {
+            onboardingStep = 0;
+            updateOnboardingUI();
+            onboardingRoot.setVisibility(View.VISIBLE);
+        }
+    }
 
+    private void startTapTargetTutorial() {
         new TapTargetSequence(this)
                 .targets(
                         TapTarget.forView(findViewById(R.id.btn_open_drawer), "Main Menu", "Access all features like Cash Flow, Calculator, and Settings here.")
+                                .id(1)
                                 .outerCircleColor(R.color.primary)
                                 .targetCircleColor(android.R.color.white)
-                                .titleTextSize(20)
-                                .descriptionTextSize(14)
+                                .titleTextSize(28)
+                                .descriptionTextSize(18)
+                                .titleTextColor(android.R.color.white)
                                 .descriptionTextColor(android.R.color.white)
-                                .drawShadow(true)
-                                .cancelable(false)
-                                .tintTarget(true)
-                                .transparentTarget(true),
-                        TapTarget.forView(findViewById(R.id.bottom_navigation), "Quick Navigation", "Switch between your Home dashboard and deep Financial Analytics.")
-                                .outerCircleColor(R.color.primary)
-                                .targetCircleColor(android.R.color.white)
-                                .titleTextSize(20)
-                                .descriptionTextSize(14)
-                                .descriptionTextColor(android.R.color.white)
+                                .textTypeface(Typeface.SANS_SERIF)
                                 .drawShadow(true)
                                 .cancelable(false)
                                 .tintTarget(true)
                                 .transparentTarget(true)
+                                .targetRadius(40),
+                        TapTarget.forView(findViewById(R.id.bottom_navigation), "Quick Navigation", "Switch between your Home dashboard and deep Financial Analytics.")
+                                .id(2)
+                                .outerCircleColor(R.color.primary)
+                                .targetCircleColor(android.R.color.white)
+                                .titleTextSize(28)
+                                .descriptionTextSize(18)
+                                .titleTextColor(android.R.color.white)
+                                .descriptionTextColor(android.R.color.white)
+                                .textTypeface(Typeface.SANS_SERIF)
+                                .drawShadow(true)
+                                .cancelable(false)
+                                .tintTarget(true)
+                                .transparentTarget(true)
+                                .targetRadius(60)
                 )
                 .listener(new TapTargetSequence.Listener() {
                     @Override
                     public void onSequenceFinish() {
-                        prefs.edit().putBoolean("is_first_run", false).apply();
+                        // Optimizing for all phones: Use a listener instead of a timer
+                        drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+                            @Override
+                            public void onDrawerOpened(View drawerView) {
+                                startMenuTutorial();
+                                drawerLayout.removeDrawerListener(this);
+                            }
+                        });
+                        drawerLayout.openDrawer(GravityCompat.START);
                     }
 
                     @Override
                     public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {}
 
                     @Override
-                    public void onSequenceCanceled(TapTarget lastTarget) {}
+                    public void onSequenceCanceled(TapTarget lastTarget) {
+                        finishTutorial();
+                    }
                 })
                 .start();
     }
 
+    private void startMenuTutorial() {
+        // Wait for drawer to be fully open before searching for views
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            navigationView.post(() -> {
+                View addRecord = navigationView.findViewById(R.id.nav_add_record);
+                View calculator = navigationView.findViewById(R.id.nav_calculator);
+                View cashFlow = navigationView.findViewById(R.id.nav_cash_flow);
+                View calendar = navigationView.findViewById(R.id.nav_calendar);
+                View reminders = navigationView.findViewById(R.id.nav_reminders);
+                View savings = navigationView.findViewById(R.id.nav_savings);
+
+                if (addRecord == null) {
+                    finishTutorial();
+                    return;
+                }
+
+                new TapTargetSequence(this)
+                        .targets(
+                                TapTarget.forView(addRecord, "New Record", "Quickly add your expenses or income here.")
+                                        .outerCircleColor(R.color.primary)
+                                        .targetCircleColor(android.R.color.white)
+                                        .titleTextSize(28)
+                                        .descriptionTextSize(18)
+                                        .titleTextColor(android.R.color.white)
+                                        .descriptionTextColor(android.R.color.white)
+                                        .textTypeface(Typeface.SANS_SERIF)
+                                        .drawShadow(true)
+                                        .cancelable(false)
+                                        .transparentTarget(true)
+                                        .targetRadius(35),
+                                TapTarget.forView(calculator, "Smart Calculator", "Perform quick financial calculations without leaving the app.")
+                                        .outerCircleColor(R.color.primary)
+                                        .targetCircleColor(android.R.color.white)
+                                        .titleTextSize(28)
+                                        .descriptionTextSize(18)
+                                        .titleTextColor(android.R.color.white)
+                                        .descriptionTextColor(android.R.color.white)
+                                        .textTypeface(Typeface.SANS_SERIF)
+                                        .drawShadow(true)
+                                        .cancelable(false)
+                                        .transparentTarget(true)
+                                        .targetRadius(35),
+                                TapTarget.forView(cashFlow, "Cash Flow Analytics", "Analyze your spending habits with detailed charts.")
+                                        .outerCircleColor(R.color.primary)
+                                        .targetCircleColor(android.R.color.white)
+                                        .titleTextSize(28)
+                                        .descriptionTextSize(18)
+                                        .titleTextColor(android.R.color.white)
+                                        .descriptionTextColor(android.R.color.white)
+                                        .textTypeface(Typeface.SANS_SERIF)
+                                        .drawShadow(true)
+                                        .cancelable(false)
+                                        .transparentTarget(true)
+                                        .targetRadius(35),
+                                TapTarget.forView(calendar, "Financial Calendar", "Keep track of your daily spending over time.")
+                                        .outerCircleColor(R.color.primary)
+                                        .targetCircleColor(android.R.color.white)
+                                        .titleTextSize(28)
+                                        .descriptionTextSize(18)
+                                        .titleTextColor(android.R.color.white)
+                                        .descriptionTextColor(android.R.color.white)
+                                        .textTypeface(Typeface.SANS_SERIF)
+                                        .drawShadow(true)
+                                        .cancelable(false)
+                                        .transparentTarget(true)
+                                        .targetRadius(35),
+                                TapTarget.forView(reminders, "Reminders", "Never miss a bill payment or saving goal deadline again.")
+                                        .outerCircleColor(R.color.primary)
+                                        .targetCircleColor(android.R.color.white)
+                                        .titleTextSize(28)
+                                        .descriptionTextSize(18)
+                                        .titleTextColor(android.R.color.white)
+                                        .descriptionTextColor(android.R.color.white)
+                                        .textTypeface(Typeface.SANS_SERIF)
+                                        .drawShadow(true)
+                                        .cancelable(false)
+                                        .transparentTarget(true)
+                                        .targetRadius(35),
+                                TapTarget.forView(savings, "Savings Goals", "Set targets and track your progress towards financial freedom.")
+                                        .outerCircleColor(R.color.primary)
+                                        .targetCircleColor(android.R.color.white)
+                                        .titleTextSize(28)
+                                        .descriptionTextSize(18)
+                                        .titleTextColor(android.R.color.white)
+                                        .descriptionTextColor(android.R.color.white)
+                                        .textTypeface(Typeface.SANS_SERIF)
+                                        .drawShadow(true)
+                                        .cancelable(false)
+                                        .transparentTarget(true)
+                                        .targetRadius(35)
+                        )
+                        .listener(new TapTargetSequence.Listener() {
+                            @Override
+                            public void onSequenceFinish() {
+                                finishTutorial();
+                            }
+
+                            @Override
+                            public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {}
+
+                            @Override
+                            public void onSequenceCanceled(TapTarget lastTarget) {
+                                finishTutorial();
+                            }
+                        })
+                        .start();
+            });
+        } else {
+            // Re-open if closed or retry
+            drawerLayout.openDrawer(GravityCompat.START);
+            findViewById(android.R.id.content).postDelayed(() -> startMenuTutorial(), 500);
+        }
+    }
+
+    private void finishTutorial() {
+        isTutorialRunning = false;
+        drawerLayout.closeDrawer(GravityCompat.START);
+        getSharedPreferences("bulgium_prefs", MODE_PRIVATE)
+                .edit()
+                .putBoolean("is_first_run", false)
+                .apply();
+
+        // After the main tutorial and menu tutorial are done, trigger the Home tour
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (currentFragment instanceof HomeFragment) {
+            ((HomeFragment) currentFragment).startLocalTour();
+        }
+    }
+
     private void updateOnboardingUI() {
         switch (onboardingStep) {
+            case 0:
+                tvOnboardingTitle.setText("Welcome to Bulgium!");
+                tvOnboardingDesc.setText("Your personal financial co-pilot is ready to help you grow your wealth.");
+                btnOnboardingNext.setText("Next");
+                break;
             case 1:
                 tvOnboardingTitle.setText("Track with Ease");
                 tvOnboardingDesc.setText("Swipe left to delete or right to edit your transactions instantly.");
+                btnOnboardingNext.setText("Next");
                 break;
             case 2:
                 tvOnboardingTitle.setText("Financial Pulse");
                 tvOnboardingDesc.setText("Monitor your Daily Allowance and Savings Health at a single glance.");
+                btnOnboardingNext.setText("Next");
                 break;
             case 3:
                 tvOnboardingTitle.setText("Cash Flow Trends");
@@ -239,11 +446,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void finishOnboarding() {
-        onboardingRoot.setVisibility(View.GONE);
-        getSharedPreferences("bulgium_prefs", MODE_PRIVATE)
-                .edit()
-                .putBoolean("is_first_run", false)
-                .apply();
+        if (isTutorialRunning) return;
+        isTutorialRunning = true;
+
+        // Force remove the onboarding view from the hierarchy to prevent ANY overlap
+        if (onboardingRoot != null && onboardingRoot.getParent() != null) {
+            ((android.view.ViewGroup) onboardingRoot.getParent()).removeView(onboardingRoot);
+        }
+        
+        // Slight delay to allow the layout to re-calculate without the onboarding view
+        findViewById(android.R.id.content).postDelayed(() -> startTapTargetTutorial(), 100);
     }
 
     private void showCalculatorDialog() {
