@@ -19,7 +19,7 @@ public class Transaction {
     private String note;
 
     public Transaction() {
-        // Required empty constructor for Room
+        // TEST AGAIN
     }
 
     @Ignore
