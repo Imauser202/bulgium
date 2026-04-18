@@ -19,7 +19,7 @@ public class Transaction {
     private String note;
 
     public Transaction() {
-        // TEST FOR NEW COMMIT hello
+        // TEST
     }
 
     @Ignore

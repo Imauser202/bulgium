@@ -1,8 +1,10 @@
 package com.example.bulgium;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -13,7 +15,6 @@ import android.os.Vibrator;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -21,19 +22,18 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.charts.LineChart;
+import com.example.bulgium.databinding.FragmentHomeBinding;
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetSequence;
 import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -44,9 +44,7 @@ import java.util.Locale;
 
 public class HomeFragment extends Fragment {
 
-    private LineChart balanceChart;
-    private RecyclerView rvRecentTransactions;
-    private TextView tvPulseDaily, tvPulseTopCat, tvPulseHealth;
+    private FragmentHomeBinding binding;
     private TransactionViewModel viewModel;
     private List<Transaction> currentTransactions = new ArrayList<>();
 
@@ -57,22 +55,19 @@ public class HomeFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        binding = FragmentHomeBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
 
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
-        balanceChart = view.findViewById(R.id.balance_chart);
-        rvRecentTransactions = view.findViewById(R.id.rv_recent_transactions);
-        tvPulseDaily = view.findViewById(R.id.tv_pulse_daily);
-        tvPulseTopCat = view.findViewById(R.id.tv_pulse_top_cat);
-        tvPulseHealth = view.findViewById(R.id.tv_pulse_health);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         deleteIcon = ContextCompat.getDrawable(requireContext(), android.R.drawable.ic_menu_delete);
         editIcon = ContextCompat.getDrawable(requireContext(), android.R.drawable.ic_menu_edit);
 
-        rvRecentTransactions.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.rvRecentTransactions.setLayoutManager(new LinearLayoutManager(getContext()));
 
         viewModel = new ViewModelProvider(this).get(TransactionViewModel.class);
         
@@ -81,11 +76,67 @@ public class HomeFragment extends Fragment {
         viewModel.getAllTransactions().observe(getViewLifecycleOwner(), transactions -> {
             currentTransactions = transactions;
             TransactionAdapter adapter = new TransactionAdapter(transactions, this::showTransactionOptions);
-            rvRecentTransactions.setAdapter(adapter);
+            binding.rvRecentTransactions.setAdapter(adapter);
             setupChart(transactions);
         });
+    }
 
-        return view;
+    public void startLocalTour() {
+        if (!isAdded()) return;
+        
+        SharedPreferences prefs = requireContext().getSharedPreferences("bulgium_prefs", Context.MODE_PRIVATE);
+        boolean isFirstRun = prefs.getBoolean("is_first_run", true);
+        boolean isHomeTourDone = prefs.getBoolean("home_tour_done", false);
+
+        // BULLETPROOF LOCK: Never start if main onboarding is active or if it's the very first run
+        // (In first run, MainActivity will call this manually later)
+        if (MainActivity.isTutorialRunning || isFirstRun || isHomeTourDone) return;
+
+        new TapTargetSequence(requireActivity())
+                .targets(
+                        TapTarget.forView(binding.tvPulseDaily, "Daily Allowance", "This calculates exactly how much you can spend today based on your income and expenses.")
+                                .outerCircleColor(R.color.primary)
+                                .targetCircleColor(android.R.color.white)
+                                .titleTextSize(28)
+                                .descriptionTextSize(18)
+                                .titleTextColor(android.R.color.white)
+                                .descriptionTextColor(android.R.color.white)
+                                .textTypeface(Typeface.SANS_SERIF)
+                                .transparentTarget(true)
+                                .cancelable(false)
+                                .targetRadius(50),
+                        TapTarget.forView(binding.tvPulseHealth, "Savings Health", "Our AI analyzes your spending vs income to tell if your financial status is Stable or Critical.")
+                                .outerCircleColor(R.color.primary)
+                                .targetCircleColor(android.R.color.white)
+                                .titleTextSize(28)
+                                .descriptionTextSize(18)
+                                .titleTextColor(android.R.color.white)
+                                .descriptionTextColor(android.R.color.white)
+                                .textTypeface(Typeface.SANS_SERIF)
+                                .transparentTarget(true)
+                                .cancelable(false)
+                                .targetRadius(50),
+                        TapTarget.forView(binding.balanceChart, "Wealth Trend", "Watch your net worth grow over time with this smooth interactive graph.")
+                                .outerCircleColor(R.color.primary)
+                                .targetCircleColor(android.R.color.white)
+                                .titleTextSize(28)
+                                .descriptionTextSize(18)
+                                .titleTextColor(android.R.color.white)
+                                .descriptionTextColor(android.R.color.white)
+                                .textTypeface(Typeface.SANS_SERIF)
+                                .transparentTarget(true)
+                                .cancelable(false)
+                                .targetRadius(80)
+                )
+                .listener(new TapTargetSequence.Listener() {
+                    @Override
+                    public void onSequenceFinish() {
+                        prefs.edit().putBoolean("home_tour_done", true).apply();
+                    }
+                    @Override public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {}
+                    @Override public void onSequenceCanceled(TapTarget lastTarget) {}
+                })
+                .start();
     }
 
     private void triggerVibration() {
@@ -136,7 +187,7 @@ public class HomeFragment extends Fragment {
         Context context = getContext();
         if (context == null) return;
         View bottomNav = getActivity() != null ? getActivity().findViewById(R.id.bottom_navigation) : null;
-        Snackbar snackbar = Snackbar.make(rvRecentTransactions, message, Snackbar.LENGTH_LONG)
+        Snackbar snackbar = Snackbar.make(binding.rvRecentTransactions, message, Snackbar.LENGTH_LONG)
                 .setAction("Undo", v -> viewModel.insert(t))
                 .setActionTextColor(Color.YELLOW);
 
@@ -174,13 +225,13 @@ public class HomeFragment extends Fragment {
                 int position = viewHolder.getAdapterPosition();
                 Transaction t = currentTransactions.get(position);
 
-                triggerVibration(); // Feedback when action is confirmed
+                triggerVibration();
 
                 if (direction == ItemTouchHelper.LEFT) {
-                    viewModel.delete(t);
-                    showAestheticSnackbar("Transaction deleted", t);
+                    confirmDeletion(t);
+                    binding.rvRecentTransactions.getAdapter().notifyItemChanged(position);
                 } else if (direction == ItemTouchHelper.RIGHT) {
-                    rvRecentTransactions.getAdapter().notifyItemChanged(position);
+                    binding.rvRecentTransactions.getAdapter().notifyItemChanged(position);
                     openEditFragment(t);
                 }
             }
@@ -191,7 +242,7 @@ public class HomeFragment extends Fragment {
                 int iconTop = itemView.getTop() + (itemView.getHeight() - deleteIcon.getIntrinsicHeight()) / 2;
                 int iconBottom = iconTop + deleteIcon.getIntrinsicHeight();
 
-                if (dX > 0) { // EDIT (Green)
+                if (dX > 0) { // EDIT
                     int iconMargin = (itemView.getHeight() - editIcon.getIntrinsicHeight()) / 2;
                     int iconLeft = itemView.getLeft() + iconMargin;
                     int iconRight = itemView.getLeft() + iconMargin + editIcon.getIntrinsicWidth();
@@ -199,7 +250,7 @@ public class HomeFragment extends Fragment {
                     editBackground.setBounds(itemView.getLeft(), itemView.getTop(), itemView.getLeft() + (int) dX, itemView.getBottom());
                     editBackground.draw(c);
                     editIcon.draw(c);
-                } else if (dX < 0) { // DELETE (Red)
+                } else if (dX < 0) { // DELETE
                     int iconMargin = (itemView.getHeight() - deleteIcon.getIntrinsicHeight()) / 2;
                     int iconLeft = itemView.getRight() - iconMargin - deleteIcon.getIntrinsicWidth();
                     int iconRight = itemView.getRight() - iconMargin;
@@ -211,112 +262,77 @@ public class HomeFragment extends Fragment {
 
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
             }
-            
-            @Override
-            public float getSwipeThreshold(@NonNull RecyclerView.ViewHolder viewHolder) {
-                return 0.7f;
-            }
-        }).attachToRecyclerView(rvRecentTransactions);
+        }).attachToRecyclerView(binding.rvRecentTransactions);
     }
 
     private void setupChart(List<Transaction> transactions) {
         if (transactions == null || transactions.isEmpty()) {
-            balanceChart.clear();
-            balanceChart.setNoDataText("No data yet");
-            balanceChart.setNoDataTextColor(Color.GRAY);
-            tvPulseDaily.setText(nf.format(0));
-            tvPulseTopCat.setText("None");
-            tvPulseHealth.setText("New");
+            binding.balanceChart.clear();
+            binding.tvPulseDaily.setText(nf.format(0));
+            binding.tvPulseTopCat.setText("None");
+            binding.tvPulseHealth.setText("Stable");
             return;
         }
+
+        binding.balanceChart.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
         List<Entry> entries = new ArrayList<>();
         double currentBalance = 0;
         double totalIncome = 0;
         double totalExpense = 0;
         java.util.Map<String, Double> categoryMap = new java.util.HashMap<>();
-        
-        int count = 0;
-        // Iterate oldest to newest
+
         for (int i = transactions.size() - 1; i >= 0; i--) {
             Transaction t = transactions.get(i);
             if (t.isIncome()) {
-                totalIncome += t.getAmount();
                 currentBalance += t.getAmount();
+                totalIncome += t.getAmount();
             } else {
-                totalExpense += t.getAmount();
                 currentBalance -= t.getAmount();
+                totalExpense += t.getAmount();
                 categoryMap.put(t.getCategory(), categoryMap.getOrDefault(t.getCategory(), 0.0) + t.getAmount());
             }
-            entries.add(new Entry(count, (float) currentBalance));
-            count++;
+            entries.add(new Entry(transactions.size() - 1 - i, (float) currentBalance));
         }
 
-        // Calculate Pulse Data
-        double dailyAllowance = (totalIncome - totalExpense) / 30.0;
-        tvPulseDaily.setText(nf.format(Math.max(0, dailyAllowance)));
-
+        binding.tvPulseDaily.setText(nf.format(Math.max(0, (totalIncome - totalExpense) / 30.0)));
+        
         String topCat = "None";
         double maxExp = 0;
-        for (java.util.Map.Entry<String, Double> entry : categoryMap.entrySet()) {
-            if (entry.getValue() > maxExp) {
-                maxExp = entry.getValue();
-                topCat = entry.getKey();
+        for (java.util.Map.Entry<String, Double> e : categoryMap.entrySet()) {
+            if (e.getValue() > maxExp) {
+                maxExp = e.getValue();
+                topCat = e.getKey();
             }
         }
-        tvPulseTopCat.setText(topCat);
+        binding.tvPulseTopCat.setText(topCat);
 
-        if (totalIncome > totalExpense * 1.5) {
-            tvPulseHealth.setText("Excellent");
-            tvPulseHealth.setTextColor(Color.parseColor("#21C262"));
-        } else if (totalIncome >= totalExpense) {
-            tvPulseHealth.setText("Stable");
-            tvPulseHealth.setTextColor(Color.parseColor("#F1C40F"));
+        if (totalExpense > totalIncome * 0.8) {
+            binding.tvPulseHealth.setText("Critical");
+            binding.tvPulseHealth.setTextColor(ContextCompat.getColor(requireContext(), R.color.danger));
         } else {
-            tvPulseHealth.setText("Critical");
-            tvPulseHealth.setTextColor(Color.parseColor("#E74C3C"));
+            binding.tvPulseHealth.setText("Excellent");
+            binding.tvPulseHealth.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary));
         }
-        
+
         LineDataSet ds = new LineDataSet(entries, "Balance");
-        
-        // Fix: Use Primary color instead of hardcoded WHITE so it's visible in Light Mode
-        int chartColor = ContextCompat.getColor(requireContext(), R.color.primary);
-        
-        ds.setColor(chartColor);
-        ds.setLineWidth(3.0f); // Slightly thinner for better performance
-        ds.setDrawCircles(false); 
-        ds.setDrawValues(false); 
-        
-        // Infinix/Performance Optimization: Use HORIZONTAL_BEZIER instead of CUBIC_BEZIER
-        ds.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER); 
-        
+        int color = ContextCompat.getColor(requireContext(), R.color.primary);
+        ds.setColor(color);
+        ds.setLineWidth(3f);
+        ds.setDrawCircles(false);
+        ds.setDrawValues(false);
+        ds.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
         ds.setDrawFilled(true);
-        ds.setHighlightEnabled(false); 
         
-        // Soft primary color glow fill instead of white
-        int alphaColor = Color.argb(40, Color.red(chartColor), Color.green(chartColor), Color.blue(chartColor));
-        Drawable drawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, 
-                new int[] { alphaColor, Color.TRANSPARENT });
-        ds.setFillDrawable(drawable);
+        int alphaColor = Color.argb(40, Color.red(color), Color.green(color), Color.blue(color));
+        ds.setFillDrawable(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{alphaColor, Color.TRANSPARENT}));
 
-        balanceChart.setData(new LineData(ds));
-        
-        // Disable Hardware Acceleration for the chart to stop flickering on Infinix/Mali GPUs
-        balanceChart.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        balanceChart.setExtraOffsets(0f, 10f, 0f, 0f); // Top offset for the line width
-        balanceChart.setViewPortOffsets(0f, 40f, 0f, 0f); // More breathing room at top
-        
-        balanceChart.getXAxis().setEnabled(false);
-        balanceChart.getAxisLeft().setEnabled(false);
-        balanceChart.getAxisRight().setEnabled(false);
-        balanceChart.getLegend().setEnabled(false);
-        balanceChart.getDescription().setEnabled(false);
-        balanceChart.setTouchEnabled(false); 
-
-        // Ensure the chart scales to its content
-        balanceChart.getAxisLeft().setSpaceTop(20f);
-        balanceChart.getAxisLeft().setSpaceBottom(20f);
-
-        balanceChart.invalidate();
+        binding.balanceChart.setData(new LineData(ds));
+        binding.balanceChart.getLegend().setEnabled(false);
+        binding.balanceChart.getDescription().setEnabled(false);
+        binding.balanceChart.getXAxis().setEnabled(false);
+        binding.balanceChart.getAxisLeft().setEnabled(false);
+        binding.balanceChart.getAxisRight().setEnabled(false);
+        binding.balanceChart.invalidate();
     }
 }
