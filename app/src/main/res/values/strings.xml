@@ -57,7 +57,7 @@
     <!-- Navigation -->
     <string name="nav_home">Home</string>
     <string name="nav_dashboard">Dashboard</string>
-    <string name="nav_reports">Reports</string>
+    <string name="nav_reports">Upgrade to Prem</string>
 
     <!-- Calculator -->
     <string name="calc_title">Quick Calculator</string>

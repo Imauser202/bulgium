@@ -22,6 +22,7 @@ public class SettingsFragment extends Fragment {
     private SharedPreferences prefs;
     private static final String PREFS_NAME = "bulgium_settings";
     private static final String KEY_DARK_MODE = "dark_mode";
+    public static final String KEY_PRIVACY_MODE = "privacy_mode";
 
     private String[] currencies = {"PHP (₱)", "USD ($)", "EUR (€)", "JPY (¥)", "GBP (£)", "KRW (₩)"};
     private String[] symbols = {"₱", "$", "€", "¥", "£", "₩"};
@@ -36,6 +37,9 @@ public class SettingsFragment extends Fragment {
 
         // 1. Dark Mode Logic
         Switch darkSwitch = view.findViewById(R.id.switch_dark_mode);
+        Switch privacySwitch = view.findViewById(R.id.switch_privacy_mode);
+        Switch biometricSwitch = view.findViewById(R.id.switch_biometric);
+
         boolean isDark = prefs.getBoolean(KEY_DARK_MODE, false);
         darkSwitch.setChecked(isDark);
 
@@ -46,6 +50,23 @@ public class SettingsFragment extends Fragment {
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
             }
+        });
+
+        // 2. Privacy Mode Logic
+        boolean isPrivacyOn = prefs.getBoolean(KEY_PRIVACY_MODE, false);
+        privacySwitch.setChecked(isPrivacyOn);
+        privacySwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            prefs.edit().putBoolean(KEY_PRIVACY_MODE, isChecked).apply();
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).applyPrivacyMode(isChecked);
+            }
+        });
+
+        // 3. Biometric Lock Logic
+        boolean isBiometricOn = prefs.getBoolean("biometric_lock", false);
+        biometricSwitch.setChecked(isBiometricOn);
+        biometricSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            prefs.edit().putBoolean("biometric_lock", isChecked).apply();
         });
 
         // 2. Currency Logic
