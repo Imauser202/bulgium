@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private FrameLayout bottomNavCard;
     private View toolbarLayout;
     private View biometricOverlay;
-    private Runnable keyboardLayoutListener;
+    private android.view.ViewTreeObserver.OnGlobalLayoutListener keyboardLayoutListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -259,14 +259,14 @@ public class MainActivity extends AppCompatActivity {
                 bottomNavCard.setVisibility(View.VISIBLE);
             }
         };
-        contentView.getViewTreeObserver().addOnGlobalLayoutListener(() -> keyboardLayoutListener.run());
+        contentView.getViewTreeObserver().addOnGlobalLayoutListener(keyboardLayoutListener);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if (keyboardLayoutListener != null) {
-            findViewById(android.R.id.content).getViewTreeObserver().removeOnGlobalLayoutListener(() -> keyboardLayoutListener.run());
+            findViewById(android.R.id.content).getViewTreeObserver().removeOnGlobalLayoutListener(keyboardLayoutListener);
         }
     }
 }

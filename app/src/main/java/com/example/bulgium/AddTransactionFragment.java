@@ -55,7 +55,7 @@ public class AddTransactionFragment extends Fragment {
 
     private boolean isFormatting = false;
 
-    // Calculator State
+    // Calculator State NEW VER
     private double firstValue = Double.NaN;
     private char currentOperation = ' ';
     private boolean isNewOp = true;
