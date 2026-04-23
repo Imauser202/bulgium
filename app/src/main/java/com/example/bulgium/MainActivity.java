@@ -131,7 +131,11 @@ public class MainActivity extends AppCompatActivity {
             else if (id == R.id.nav_savings) selected = new SavingsFragment();
 
             if (selected != null) {
+                // Clear backstack when switching main tabs
+                getSupportFragmentManager().popBackStack(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
                 getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                         .replace(R.id.fragment_container, selected)
                         .commit();
             }
@@ -155,9 +159,13 @@ public class MainActivity extends AppCompatActivity {
             else if (id == R.id.nav_settings) selected = new SettingsFragment();
 
             if (selected != null) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, selected)
-                        .commit();
+                androidx.fragment.app.FragmentTransaction transaction = getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                        .replace(R.id.fragment_container, selected);
+
+                // KEY FIX: Add to backstack for non-tab fragments
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
             drawerLayout.closeDrawers();
             return true;

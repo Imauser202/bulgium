@@ -33,14 +33,15 @@ import java.util.Locale;
 
 public class AddTransactionFragment extends Fragment {
 
+    // NEW VER 0001
     private EditText etAmount, etNote, etDate;
-    private TextInputLayout tilAmount, tilDate, tilCategory, tilNote;
+    private TextInputLayout tilAmount;
     private MaterialButtonToggleGroup transactionTypeGroup;
     private MaterialAutoCompleteTextView spCategory;
     private MaterialButton btnSave;
     private MaterialButton rbIncome, rbExpense;
     private TransactionViewModel viewModel;
-    private TextView tvTitle, tvCurrentBalance;
+    private TextView tvTitle;
     private com.google.android.material.chip.Chip chipBalance;
 
     private long selectedTimestamp = System.currentTimeMillis();
@@ -59,7 +60,7 @@ public class AddTransactionFragment extends Fragment {
     private double firstValue = Double.NaN;
     private char currentOperation = ' ';
     private boolean isNewOp = true;
-    private DecimalFormat decimalFormat = new DecimalFormat("#.##########");
+    private final DecimalFormat decimalFormat = new DecimalFormat("#.##########");
 
     @Nullable
     @Override
@@ -77,17 +78,12 @@ public class AddTransactionFragment extends Fragment {
         etNote = view.findViewById(R.id.et_note);
         etDate = view.findViewById(R.id.et_date);
         tilAmount = view.findViewById(R.id.til_amount);
-        tilDate = view.findViewById(R.id.til_date);
-        tilCategory = view.findViewById(R.id.til_category);
-        tilNote = view.findViewById(R.id.til_note);
         transactionTypeGroup = view.findViewById(R.id.transactionTypeGroup);
         spCategory = view.findViewById(R.id.sp_category);
         btnSave = view.findViewById(R.id.btn_save);
         rbIncome = view.findViewById(R.id.rb_income);
         rbExpense = view.findViewById(R.id.rb_expense);
         chipBalance = view.findViewById(R.id.chip_current_balance);
-
-        viewModel = new ViewModelProvider(requireActivity()).get(TransactionViewModel.class);
         
         observeBalance();
         updateDateLabel();
@@ -204,10 +200,12 @@ public class AddTransactionFragment extends Fragment {
         View.OnClickListener opListener = v -> {
             String opStr = ((MaterialButton) v).getText().toString();
             char nextOp = ' ';
-            if (opStr.equals("+")) nextOp = '+';
-            else if (opStr.equals("−")) nextOp = '-';
-            else if (opStr.equals("×")) nextOp = '*';
-            else if (opStr.equals("÷")) nextOp = '/';
+            switch (opStr) {
+                case "+": nextOp = '+'; break;
+                case "−": nextOp = '-'; break;
+                case "×": nextOp = '*'; break;
+                case "÷": nextOp = '/'; break;
+            }
 
             try {
                 double val = Double.parseDouble(tvDisplay.getText().toString());
@@ -219,7 +217,7 @@ public class AddTransactionFragment extends Fragment {
                 }
                 currentOperation = nextOp;
                 isNewOp = true;
-            } catch (Exception e) {}
+            } catch (NumberFormatException ignored) {}
         };
 
         int[] opIds = {R.id.btn_calc_plus, R.id.btn_calc_minus, R.id.btn_calc_multiply, R.id.btn_calc_divide};
@@ -234,7 +232,7 @@ public class AddTransactionFragment extends Fragment {
                     firstValue = Double.NaN;
                     currentOperation = ' ';
                     isNewOp = true;
-                } catch (Exception e) {}
+                } catch (NumberFormatException ignored) {}
             }
         });
 
@@ -341,12 +339,30 @@ public class AddTransactionFragment extends Fragment {
                 Toast.makeText(getContext(), R.string.transaction_updated, Toast.LENGTH_SHORT).show();
             } else {
                 viewModel.insert(transaction);
-                Toast.makeText(getContext(), "Transaction saved!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.transaction_saved, Toast.LENGTH_SHORT).show();
             }
             
-            requireActivity().getSupportFragmentManager().popBackStack();
+            closeFragment();
         } catch (NumberFormatException e) {
             tilAmount.setError(getString(R.string.error_invalid_amount));
+        }
+    }
+
+    private void closeFragment() {
+        // Try to pop the backstack first
+        if (!getParentFragmentManager().popBackStackImmediate()) {
+            // Fallback: Navigate to Home explicitly
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                    .replace(R.id.fragment_container, new HomeFragment())
+                    .commit();
+
+            // Sync the bottom navigation selection
+            if (requireActivity() instanceof MainActivity) {
+                com.google.android.material.bottomnavigation.BottomNavigationView nav =
+                        requireActivity().findViewById(R.id.bottom_navigation);
+                nav.setSelectedItemId(R.id.nav_home);
+            }
         }
     }
 }

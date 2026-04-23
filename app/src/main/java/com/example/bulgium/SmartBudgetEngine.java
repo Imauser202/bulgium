@@ -42,7 +42,8 @@ public class SmartBudgetEngine {
                 totalIncome += t.getAmount();
             } else {
                 totalExpenses += t.getAmount();
-                categoryTotals.put(t.getCategory(), categoryTotals.getOrDefault(t.getCategory(), 0.0) + t.getAmount());
+                Double current = categoryTotals.get(t.getCategory());
+                categoryTotals.put(t.getCategory(), (current == null ? 0.0 : current) + t.getAmount());
             }
         }
 

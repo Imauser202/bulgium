@@ -38,6 +38,7 @@
     <string name="error_amount_required">Please enter an amount.</string>
     <string name="error_invalid_amount">Invalid amount.</string>
     <string name="transaction_updated">Transaction updated!</string>
+    <string name="transaction_saved">Transaction saved!</string>
     <string name="smart_suggestion">Smart Suggestion</string>
     <string name="got_it">Got it!</string>
     <string name="edit_transaction">Edit Transaction</string>
